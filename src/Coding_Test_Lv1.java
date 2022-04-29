@@ -1,16 +1,176 @@
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
 
 public class Coding_Test_Lv1 {
     public static void main(String[] args) {
         Solution solution = new Solution();
-        int[] stages = {2,1,2,4,2,4,3,3};
-        int n = 5;
 
-        System.out.println(Arrays.toString(solution.solution(n,stages)));
+        int[] fees ={1, 461, 1, 10};
+        String[] records={"00:00 1234 IN"};
+        System.out.println(Arrays.toString(solution.solution(fees,records)));
     }
 }
 
 class Solution {
+
+    //lv2_2022_kakao_Blind
+    public int[] solution(int[] fees, String[] records) {
+
+        int base_time = fees[0];
+        int base_price = fees[1];
+        int per_time = fees[2];
+        int per_price = fees[3];
+
+        List<String> in = new ArrayList<>();
+        List<String> out = new ArrayList<>();
+
+        Map<String,Integer> bill = new TreeMap<>();
+
+        for(int i=0;i<records.length;i++){
+            if(records[i].split(" ")[2].equals("IN")) {
+                in.add(records[i]);
+            }else if (records[i].split(" ")[2].equals("OUT")){
+                out.add(records[i]);
+            }
+        }
+
+        for(int i=0;i<in.size();i++){
+            String in_data = in.get(i);
+
+            String carno = in_data.split(" ")[1];
+            String out_data = "";
+
+            for(int j=0;j<out.size();j++){
+                if(out.get(j).split(" ")[1].equals(carno)){
+                    out_data = out.get(j);
+                    out.remove(j);
+                    break;
+                }
+            }
+
+            String out_time = out_data.equals("")?"23:59": out_data.split(" ")[0];
+            String in_time = in_data.split(" ")[0];
+
+            int outt = Integer.valueOf(out_time.split(":")[0])*60 + Integer.valueOf(out_time.split(":")[1]);
+            int intt = Integer.valueOf(in_time.split(":")[0])*60 + Integer.valueOf(in_time.split(":")[1]);
+            int total = outt - intt;
+
+            if(bill.containsKey(carno)) {
+                bill.put(carno,bill.get(carno) + total);
+            }else {
+                bill.put(carno, total);
+            }
+        }
+
+
+        int[] answer = new int[bill.size()];
+        int cnt = 0;
+
+        for(String key : bill.keySet()){
+
+            int time = bill.get(key);
+
+            if(time <= base_time){
+                answer[cnt] = base_price;
+            }else {
+                answer[cnt] =(int)( base_price + Math.ceil((double)(time - base_time) / per_time) * per_price);
+            }
+            cnt++;
+        }
+
+        return answer;
+    }
+
+    public String solution(String s) {
+
+        String answer = "";
+        int len = s.length();
+
+        if(len%2==0){
+            answer = s.substring((len/2)-1,(len/2)+1);
+
+        }else{
+            answer = String.valueOf(s.charAt(s.length()/2));
+        }
+
+        return answer;
+    }
+
+    //2016
+    public String solution(int a, int b) {
+
+        LocalDate date = LocalDate.of(2016,a,b);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        String answer = dayOfWeek.getDisplayName(TextStyle.SHORT,Locale.US);
+        answer = answer.toUpperCase();
+        return answer;
+    }
+
+    // MCC_1
+    public int[] solution(int[] numbers) {
+
+        HashSet set = new HashSet();
+
+        for(int i=0;i<numbers.length;i++)
+        {
+            for(int j=i+1;j<numbers.length;j++)
+            {
+                set.add(numbers[i]+numbers[j]);
+            }
+        }
+
+        int[] answer = new int[set.size()];
+
+        Iterator iter = set.iterator();
+        int cnt=0;
+        while(iter.hasNext()){
+            answer[cnt] = Integer.parseInt(iter.next().toString());
+            cnt++;
+        }
+        Arrays.sort(answer);
+        return answer;
+    }
+
+    // SW~2018
+    public int solution(int[] d, int budget) {
+
+        int answer = 0;
+        Arrays.sort(d);
+
+        int tmp=0;
+
+        for(int i =0;i<d.length;i++){
+
+            tmp+=d[i];
+
+            if(tmp > budget)
+            {
+                answer = i;
+                break;
+            }
+
+            if(tmp <= budget)
+            {
+                answer = d.length;
+            }
+        }
+
+        return answer;
+    }
+
+    //MCC_3진법
+    public int solution(int n) {
+
+        String tmp3 = Integer.toString(n,3);
+        StringBuffer sb = new StringBuffer(tmp3);
+        String reverse3 = sb.reverse().toString();
+        int answer = Integer.parseInt(reverse3,3);
+
+        return answer;
+    }
 
     // kakao_2019_blind
     public int[] solution(int N, int[] stages) {
@@ -83,7 +243,7 @@ class Solution {
     }
 
     //폰켓몬
-    public int solution(int[] nums) {
+    public int solution_04(int[] nums) {
         int answer = 0;
         int got = nums.length/2;
         HashSet<Integer> poketmon = new HashSet<>();
@@ -409,7 +569,7 @@ class Solution {
     }
 
     // kakao_2021_Blind_Lv1
-    public String solution(String new_id) {
+    public String solution_01(String new_id) {
         String answer = "";
 
         // 1단계
